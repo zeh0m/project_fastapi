@@ -1,0 +1,15 @@
+fastapi~=0.115.12
+uvicorn
+celery~=5.5.3
+pytesseract~=0.3.13
+sqlalchemy~=2.0.41
+requests~=2.32.4
+pydantic~=2.11.7
+pillow~=11.2.1
+psycopg2-binary
+alembic
+python-multipart
+Image
+pytesseract
+opencv-python-headless
+numpy
