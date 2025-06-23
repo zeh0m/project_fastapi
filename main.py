@@ -8,12 +8,11 @@ from PIL import Image
 
 import models
 import schemas
-from database import engine, Sessionlocal
+from database import Sessionlocal
 import logging
 from celery_worker import analyse_document_task
-from models import DocumentsText
 
-models.Base.metadata.create_all(bind=engine)
+
 
 app = FastAPI()
 

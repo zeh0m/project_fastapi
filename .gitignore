@@ -1,4 +1,4 @@
-# Python
+
 __pycache__/
 *.pyc
 *.pyo
@@ -8,5 +8,4 @@ __pycache__/
 *.log
 *.pid
 *.swp
-.env
 *.db
