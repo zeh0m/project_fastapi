@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Результат</title>
+</head>
+<body>
+    <h1>Результат</h1>
+    {% if result.error %}
+        <p style="color:red;">{{ result.error }}</p>
+    {% else %}
+        <pre>{{ result.text }}</pre>
+    {% endif %}
+    <a href="{% url 'get_text' %}">Назад</a>
+</body>
+</html>

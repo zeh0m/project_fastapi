@@ -1,0 +1,19 @@
+{% if user.is_staff %}
+    <h1>Удаление документа</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label>Введите ID документа (через запятую):</label><br>
+        <input type="text" name="doc_ids" required>
+        <button type="submit">Удалить</button>
+    </form>
+
+    {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% else %}
+    <p>Вам сюда нельзя.</p>
+{% endif %}

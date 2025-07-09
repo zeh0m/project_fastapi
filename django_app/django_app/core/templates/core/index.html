@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Главная страница — Документы</title>
+    <style>
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .item {
+            width: calc(25% - 10px); /* 4 в ряд */
+            box-sizing: border-box;
+        }
+        .item img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Загруженные документы</h1>
+    <a href="{% url 'upload_doc' %}">Добавить картинку</a>
+     <a href="{% url 'get_text' %}">Получить текст документа</a> |
+    <div class="gallery">
+        {% for doc in docs %}
+            <div class="item">
+                <img src="{{ doc.image.url }}" alt="Документ {{ doc.id }}">
+                <p>ID: {{ doc.id }}</p>
+            </div>
+        {% empty %}
+            <p>Документы не найдены.</p>
+        {% endfor %}
+    </div>
+</body>
+{% if user.is_authenticated %}
+    <p>Привет, {{ user.username }}</p>
+<form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" style="background:none;border:none;color:blue;text-decoration:underline;cursor:pointer;padding:0;">Выйти</button>
+</form>
+{% else %}
+    <a href="{% url 'login' %}">Войти</a>
+{% endif %}
+{% if user.is_staff %}
+    <a href="{% url 'delete_doc' %}">Удалить документ</a>
+{% endif %}
+    <a href="{% url 'doc_analyse' %}">Анализ документа</a>
+

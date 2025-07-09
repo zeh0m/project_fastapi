@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Результат анализа</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        .result-box {
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+        }
+
+        .result-box h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        .buttons {
+            margin-top: 20px;
+        }
+
+        .buttons a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .buttons a:hover {
+            background-color: #0056b3;
+        }
+
+        pre {
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-box">
+        <h2>Результат анализа</h2>
+
+        {% if result %}
+            {% if result.error %}
+                <p class="error">{{ result.error }}</p>
+            {% elif result.message %}
+                <p class="success">{{ result.message }}</p>
+            {% else %}
+                <pre>{{ result|safe }}</pre>
+            {% endif %}
+        {% else %}
+            <p class="error">Результат анализа отсутствует.</p>
+        {% endif %}
+
+        <div class="buttons">
+            <a href="{% url 'doc_analyse' %}">Назад к анализу</a>

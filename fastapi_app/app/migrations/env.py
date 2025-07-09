@@ -1,10 +1,9 @@
 from logging.config import fileConfig
-
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from models import Document, DocumentsText
 from alembic import context
-from database import Base
+
+from app.database import Base
 
 
 # this is the Alembic Config object, which provides

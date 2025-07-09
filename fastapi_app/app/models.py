@@ -1,14 +1,14 @@
 from typing import List
-from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from database import Base
+from app.database import Base
 
 
 class Document(Base):
     __tablename__ = "document"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    filename: Mapped[str] = mapped_column(unique=True, index=True)
+    filename: Mapped[str] = mapped_column(unique=False, index=True)
     path: Mapped[str] = mapped_column()
 
     text_entries: Mapped[List["DocumentsText"]] = relationship(

@@ -11,13 +11,15 @@ RUN apt update && apt -y upgrade && apt -y install \
     libxrender-dev \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY requirements.txt /app/requirements.txt
+
+
 RUN pip install --no-cache-dir -r requirements.txt
 RUN apt update && apt -y upgrade && apt -y install tesseract-ocr tesseract-ocr-rus
 
-COPY . .
+COPY . /app
 
-CMD ["celery", "-A", "celery_worker.celery_app", "worker", "--loglevel=info"]
+
 
 
 

@@ -1,9 +1,8 @@
-#.env
+
 services:
   api:
     build:
-      context: .
-      dockerfile: Dockerfile.api
+      context: fastapi_app
     container_name: fastapi_app
     ports:
       - "8000:8000"
@@ -12,26 +11,31 @@ services:
       - postgres
     environment:
       - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - PYTHONPATH=/app
+
     volumes:
-      - ./:/app
+      - ./fastapi_app/app:/app/app
+      - ./fastapi_app/documents/images:/app/documents/images
+
     command: >
-      sh -c "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
-  
+      sh -c "alembic -c /app/app/alembic.ini upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+      
 
   celery_worker:
     build:
-      context: .
-      dockerfile: Dockerfile.worker
+      context: fastapi_app
     container_name: celery_worker
     depends_on:
       - rabbitmq
       - postgres
     environment:
       - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-    command: >
-      celery -A celery_worker.celery_app worker --loglevel=info
+      - PYTHONPATH=/app
     volumes:
-      - ./:/app
+      - ./fastapi_app/app:/app/app
+      - ./fastapi_app/documents/images:/app/documents/images
+    command: >
+      sh -c "celery -A app.celery_worker.celery_app worker --loglevel=info"
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -47,3 +51,31 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
 
+  postgres_django:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata_django:/var/lib/postgresql/data
+
+  django:
+    build:
+      context: ./django_app
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8001"
+    volumes:
+      - ./django_app:/app
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    depends_on:
+      - postgres_django
+
+volumes:
+  pgdata_django:

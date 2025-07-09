@@ -1,4 +1,4 @@
-"""Changes for  alembic
+"""Changes for  migrations
 
 Revision ID: 4af663c9411b
 Revises: 

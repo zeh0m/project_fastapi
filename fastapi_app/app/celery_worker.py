@@ -1,7 +1,7 @@
 from celery import Celery
 from sqlalchemy.orm import Session
-from models import Document, DocumentsText
-from database import Sessionlocal
+from app.models import Document, DocumentsText
+from app.database import Sessionlocal
 import pytesseract
 from PIL import Image
 import logging
@@ -15,6 +15,7 @@ celery_app= Celery("worker", broker="amqp://guest:guest@localhost:5672//")
 
 @celery_app.task()
 def analyse_document_task(doc_id: int):
+
     db: Session = Sessionlocal()
     try:
         document = db.query(Document).filter(Document.id == doc_id).one_or_none()
@@ -22,7 +23,6 @@ def analyse_document_task(doc_id: int):
             logging.error(f"Document with id {doc_id} not found")
             return
 
-        # Открываем изображение
         img = Image.open(document.path)
         img = img.convert("RGB")
         img_cv = np.array(img)
@@ -40,7 +40,7 @@ def analyse_document_task(doc_id: int):
 
         _, thresh = cv2.threshold(sharp, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-        # Конфиг для Tesseract
+
         custom_config = r'--oem 3 --psm 6'
 
 

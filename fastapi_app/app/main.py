@@ -1,22 +1,17 @@
 import os
-import base64
-from models import DocumentsText
-import pytesseract
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
-
-from PIL import Image
-
-import models
-import schemas
-from database import Sessionlocal
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form
 import logging
-from celery_worker import analyse_document_task
 
 
+from app import models
+from app.database import Sessionlocal
+from app.celery_worker import analyse_document_task
+from app.models import Document
+from app.schemas import AnalyseRequest
 
 app = FastAPI()
 
-DocumentFolder = "documents"
+DocumentFolder = "app/documents/images"
 os.makedirs(DocumentFolder, exist_ok=True)
 
 def get_db():
@@ -27,26 +22,41 @@ def get_db():
         db.close()
 
 
-DocumentFolder = "documents"
-
 if not os.path.exists(DocumentFolder):
     os.makedirs(DocumentFolder)
 
 @app.post("/upload_doc", summary="Upload document", description="We will load the document into the hard drive and db")
-async def upload_document(file: UploadFile = File(...), db: Sessionlocal = Depends(get_db)):
-    file_path = os.path.join(DocumentFolder, file.filename)
-
+async def upload_document(
+    file: UploadFile = File(...),
+    path: str = Form(...),
+    filename: str = Form(...),
+    db: Sessionlocal = Depends(get_db)
+):
     try:
-        contents = await file.read()
-        with open(file_path, "wb") as f:
-            f.write(contents)
+        file_path = os.path.join(DocumentFolder, filename)
 
-        document = models.Document(filename=file.filename, path=file_path)
+        # Убедимся, что папка существует
+        os.makedirs(path, exist_ok=True)
+
+        # Сохраняем файл на диск
+        with open(file_path, "wb") as f:
+            f.write(await file.read())
+
+        # Сохраняем в БД
+        document = Document(
+            filename=filename,
+            path=file_path
+        )
         db.add(document)
         db.commit()
         db.refresh(document)
 
-        return {"message": "file uploaded", "doc_id": document.id}
+        return {
+            "message": "file uploaded",
+            "doc_id": document.id,
+            "filename": filename,
+            "saved_path": file_path
+        }
 
     except Exception as e:
         db.rollback()
@@ -65,6 +75,7 @@ def delete_document(doc_id: int, db: Sessionlocal = Depends(get_db)):
     try:
         if os.path.isfile(document.path):
             os.remove(document.path)
+
         else:
             logging.warning(f"File {document.path} not found.")
     except Exception as e:
@@ -81,7 +92,8 @@ def delete_document(doc_id: int, db: Sessionlocal = Depends(get_db)):
     return {"message": "file deleted"}
 
 @app.post("/doc_analyse", summary="Analyse document", description="We will analyse the document in db")
-def analyse_document(doc_id: int, db: Sessionlocal = Depends(get_db)):
+def analyse_document(payload: AnalyseRequest, db: Sessionlocal = Depends(get_db)):
+    doc_id = payload.doc_id
     document = db.query(models.Document).filter(models.Document.id == doc_id).first()
     if not document:
         raise HTTPException(status_code=404, detail="Document not found")
@@ -91,7 +103,8 @@ def analyse_document(doc_id: int, db: Sessionlocal = Depends(get_db)):
 
 
 @app.get("/get_text", summary="Get text", description="We will get the text from the db")
-def get_document_text(doc_id: int, db: Sessionlocal = Depends(get_db)):
+def get_document_text(payload: AnalyseRequest, db: Sessionlocal = Depends(get_db)):
+    doc_id = payload.doc_id
     document_text = db.query(models.DocumentsText).filter(models.DocumentsText.doc_id == doc_id).first()
 
     if not document_text:
