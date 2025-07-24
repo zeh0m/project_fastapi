@@ -1,4 +1,4 @@
-.env
+
 django_app/media/images/*
 __pycache__/
 *.pyc
