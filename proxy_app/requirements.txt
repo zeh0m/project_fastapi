@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+httpx[http2]
+python-jose[cryptography]
+pydentic
+python-decouple
+asyncpg
+python-multipart
+redis
+fastapi-cache2
+getmac
+aiohttp

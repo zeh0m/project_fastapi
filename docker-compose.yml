@@ -77,5 +77,26 @@ services:
     depends_on:
       - postgres_django
 
+  proxy:
+    build:
+      context: ./proxy_app
+    environment:
+      - PYTHONPATH=/app
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - postgres_django
+      - api
+    volumes:
+      - ./proxy_app:/app/proxy_app
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+      
 volumes:
   pgdata_django:

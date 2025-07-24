@@ -35,14 +35,11 @@ async def upload_document(
     try:
         file_path = os.path.join(DocumentFolder, filename)
 
-        # Убедимся, что папка существует
         os.makedirs(path, exist_ok=True)
 
-        # Сохраняем файл на диск
         with open(file_path, "wb") as f:
             f.write(await file.read())
 
-        # Сохраняем в БД
         document = Document(
             filename=filename,
             path=file_path
@@ -103,8 +100,7 @@ def analyse_document(payload: AnalyseRequest, db: Sessionlocal = Depends(get_db)
 
 
 @app.get("/get_text", summary="Get text", description="We will get the text from the db")
-def get_document_text(payload: AnalyseRequest, db: Sessionlocal = Depends(get_db)):
-    doc_id = payload.doc_id
+def get_document_text(doc_id: int, db: Sessionlocal = Depends(get_db)):
     document_text = db.query(models.DocumentsText).filter(models.DocumentsText.doc_id == doc_id).first()
 
     if not document_text:

@@ -29,8 +29,7 @@ MY_URL = config('MY_URL_FASTAPI')
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 dddd = 222
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-v4j2+q1yb7-z*=4&zf*)&#p8ibnmt%chg5e8h+ul1!o)=46wj2'
-
+SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
