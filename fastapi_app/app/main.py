@@ -13,7 +13,8 @@ app = FastAPI()
 
 @app.get("/health")
 async def health_check():
-    return {"status": True, "services": "Api"}
+    return {"status": True, "version": "v2"}
+
 
 DocumentFolder = "app/documents/images"
 os.makedirs(DocumentFolder, exist_ok=True)
