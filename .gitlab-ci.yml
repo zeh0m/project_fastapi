@@ -1,0 +1,30 @@
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker compose up -d --build
+    - docker compose ps
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+
+test:
+  stage: test
+  image: python:3.11
+  script:
+    - pip install -r proxy_app/requirements.txt
+    - pytest proxy_app/test
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploy stage — настраивается вручную"
+  only:
+    - main

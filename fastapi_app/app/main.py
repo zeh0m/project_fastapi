@@ -13,7 +13,7 @@ app = FastAPI()
 
 @app.get("/health")
 async def health_check():
-    return {"status": True, "version": "v2"}
+    return {"status": True, "version": "v3"}
 
 
 DocumentFolder = "app/documents/images"
