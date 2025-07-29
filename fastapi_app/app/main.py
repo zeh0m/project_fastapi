@@ -11,7 +11,7 @@ from app.schemas import AnalyseRequest
 
 app = FastAPI()
 
-@app.get("/health")
+@app.get("/test_pipeline")
 async def health_check():
     return {"status": True, "version": "v3"}
 
