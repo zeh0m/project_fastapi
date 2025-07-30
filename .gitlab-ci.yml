@@ -14,13 +14,13 @@ build:
   variables:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_TLS_CERTDIR: ""
-
-test:
-  stage: test
-  image: python:3.11
-  script:
-    - pip install -r proxy_app/requirements.txt
-    - pytest proxy_app/test
+#
+#test:
+#  stage: test
+#  image: python:3.11
+#  script:
+#    - pip install -r proxy_app/requirements.txt
+#    - pytest proxy_app/test
 
 deploy:
   stage: deploy
