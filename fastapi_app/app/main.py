@@ -13,7 +13,7 @@ app = FastAPI()
 
 @app.get("/test_pipeline")
 async def health_check():
-    return {"status": True, "version": "v7"}
+    return {"status": True, "version": "v8"}
 
 
 DocumentFolder = "app/documents/images"
